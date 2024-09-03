@@ -3,7 +3,8 @@ import TextInput from "../ui/TextInput";
 import styled from "styled-components";
 import Button from "../ui/Button";
 import { useLocation, useNavigate } from 'react-router-dom';
-import axios from "axios";
+// import axios from "axios";
+import api from '../api/axios';
 import _ from 'lodash';
 // import { useParams } from 'react-router-dom';
 
@@ -47,10 +48,34 @@ function BbsWritePage(props) {
         navigate('/');
     }
 
+    // json-server
+    // const bbsSave = async () => {
+    
+    //     const data = {
+    //         id: Date.now(),
+    //         title: title,
+    //         content: content,
+    //     };
+    //     try {
+    //         if(content==='' || title===''){
+    //             alert("제목과 내용 모두 입력해 주세요!");
+                
+    //         }else{
+    //             const response = await api.post('bbs', data);
+    //             console.log(response.data);
+    //             alert("글 작성을 완료했습니다.");
+    //             navigate('/');
+    //         }
+    //     } catch (error) {
+    //         console.error(error);
+    //         alert("데이터 저장 중 오류가 발생했습니다.");
+    //     }
+    // }
+
+    // spring version
     const bbsSave = async () => {
     
         const data = {
-            id: Date.now(),
             title: title,
             content: content,
         };
@@ -59,10 +84,14 @@ function BbsWritePage(props) {
                 alert("제목과 내용 모두 입력해 주세요!");
                 
             }else{
-                const response = await axios.post('http://localhost:8000/bbs', data);
-                console.log(response.data);
-                alert("글 작성을 완료했습니다.");
-                navigate('/');
+                const response = await api.post('bbs/save', data);
+                console.log(response);
+                if(response.status == 204){
+                    alert("글 작성을 완료했습니다.");
+                    navigate('/');
+                }else{
+                    alert("데이터 저장중 오류발생!!");
+                }
             }
         } catch (error) {
             console.error(error);
@@ -76,6 +105,7 @@ function BbsWritePage(props) {
 
     const bbsFiexed = async (id) => {
         const data = {
+            id:id,
             title: title,
             content: content,
         };
@@ -84,7 +114,8 @@ function BbsWritePage(props) {
             if(content==='' || title===''){
                 alert("제목 또는 내용을 공백으로 둘 수 없습니다!");    
             }else{
-                const response = await axios.patch(`http://localhost:8000/bbs/${id}`, data);
+                // const response = await api.patch(`bbs/update/${id}`, data);
+                const response = await api.patch(`bbs/update`, data);
                 console.log(response.data);
                 alert("글 수정을 완료했습니다.");
                 navigate(`/bbs-view/${id}`);
@@ -103,10 +134,16 @@ function BbsWritePage(props) {
     const getBbs = async () => {
         try {
             if (id != null) {
-                const response = await axios.get(`http://localhost:8000/bbs/${id}`);
-                // console.log("debug >>> response, ", response.data);
+                const response = await api.get(`bbs/view/${id}`);
+                console.log("debug >>> response data, ", response.data);
+                
                 setBbs({...response.data});
-                setSaveData({...response.data}); 
+                // setSaveData({...response.data}); 
+                setSaveData({
+                    id:response.data.id,
+                    title:response.data.title,
+                    content:response.data.content
+                })
 
                 setTitle(response.data.title);
                 setContent(response.data.content);
@@ -141,7 +178,11 @@ function BbsWritePage(props) {
         // }else{
         //     setIsFlag(true);
         // }
+
         setIsFlag(_.isEqual(saveData, bbs));
+
+        
+        
     },);
 
 

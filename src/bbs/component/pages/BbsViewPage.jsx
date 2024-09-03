@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
-import axios from "axios";
+// import axios from "axios";
+import api from '../api/axios';
 import { useParams } from 'react-router-dom';
 import styled from 'styled-components';
 import Button from '../ui/Button';
@@ -52,11 +53,25 @@ function BbsViewPage() {
     const [comment, setComment] = useState();
     const [comments, setComments] = useState([]);
 
+    // json-server
+    // const getBbs = async () => {
+    //     try {
+    //         const response = await api.get(`http://localhost:8000/bbs/${id}`);
+    //         console.log("debug >>> response, ", response.data);
+    //         setBbs(response.data);
+    //     } catch (err) {
+    //         console.log(err);
+    //     }
+    // };
+    
+    // sprnig version
     const getBbs = async () => {
         try {
-            const response = await axios.get(`http://localhost:8000/bbs/${id}`);
+            const response = await api.get(`bbs/view/${id}`);
             console.log("debug >>> response, ", response.data);
             setBbs(response.data);
+            console.log("debug >>> response, ", response.data.comments);
+            setComments(response.data.comments);
         } catch (err) {
             console.log(err);
         }
@@ -64,36 +79,62 @@ function BbsViewPage() {
 
     useEffect(() => {
         getBbs();
-        getComments();
+        // getComments();
     }, []);
 
 
+    // Json-server
+    // const bbsSave = async () => {
+    //     const data = {
+    //         id: Date.now(),
+    //         comment: comment,
+    //         bbs_id: id
+    //     };
+    //     try {
+    //         if(comment !== ''){
+    //             const response = await api.post('comments', data);
+    //             console.log(response.data);
+    //         }else{
+    //             alert("댓글을 입력해 주세요!!");
+    //         }
+    //         setComment('');
+    //     } catch (error) {
+    //         console.error(error);
+    //         alert("데이터 저장 중 오류가 발생했습니다.");
+    //     }
+    //     getComments();
+    // }
 
     const bbsSave = async () => {
         const data = {
-            id: Date.now(),
             comment: comment,
-            bbs_id: id
+            bbsid: id
         };
         try {
             if(comment !== ''){
-                const response = await axios.post('http://localhost:8000/comments', data);
+                const response = await api.post('bbs/comment/save', data);
                 console.log(response.data);
+                if(response.status == 204){
+                    setComment('');
+                    getComments();
+                }else{
+                    alert("오류발생!!");
+                }
             }else{
                 alert("댓글을 입력해 주세요!!");
             }
-            setComment('');
         } catch (error) {
             console.error(error);
             alert("데이터 저장 중 오류가 발생했습니다.");
         }
-        getComments();
+        
     }
 
     const getComments = async () => {
         try {
-            const response = await axios.get(`http://localhost:8000/comments?bbs_id=${id}`);
-            console.log("debug >>> response, ", response.data);
+            // const response = await api.get(`comments?bbs_id=${id}`);
+            const response = await api.get(`bbs/view/getComment/${id}`);
+            console.log("debug >>> commets/get response data, ", response.data);
             setComments(response.data);
         } catch (err) {
             console.log(err);
@@ -104,9 +145,21 @@ function BbsViewPage() {
         setComment(e.target.value);
     }
 
-    const deleteData = async (id) => {
+    // const deleteData = async (id) => {
+        
+    //     try {
+    //         const response = await api.delete(`comments/${id}`); // 삭제할 데이터의 URL
+    //         console.log('삭제 성공:', response.data);
+    //     } catch (error) {
+    //         console.error('삭제 오류:', error);
+    //     }
+    //     getComments();
+    // };
+
+    const deleteData = async (bbsid) => {
+        
         try {
-            const response = await axios.delete(`http://localhost:8000/comments/${id}`); // 삭제할 데이터의 URL
+            const response = await api.delete(`bbs/comment/delete/${bbsid}`); // 삭제할 데이터의 URL
             console.log('삭제 성공:', response.data);
         } catch (error) {
             console.error('삭제 오류:', error);
@@ -114,11 +167,27 @@ function BbsViewPage() {
         getComments();
     };
 
-    const deleteBbs = async (bbsId) => {
+    // json-server
+    // const deleteBbs = async (bbsId) => {
+    //     try {
+    //         const response = await api.delete(`bbs/${bbsId}`);
+    //         console.log('삭제 성공:', response.data);
+    //         navigate('/');
+    //     } catch (error) {
+    //         console.error('삭제 오류:', error);
+    //     }
+    // }
+
+    const deleteBbs = async (bbsid) => {
+        console.log("debug >>> remove btn click : "+comments.length);
         try {
-            const response = await axios.delete(`http://localhost:8000/bbs/${bbsId}`);
-            console.log('삭제 성공:', response.data);
-            navigate('/');
+            if(comments.length > 0){
+                alert("타임라인이 남아있어 게시글 삭제가 안됩니다.");
+            }else{
+                const response = await api.delete(`bbs/delete/${bbsid}`);
+                console.log('삭제 성공:', response.data);
+                navigate('/');
+            }
         } catch (error) {
             console.error('삭제 오류:', error);
         }

@@ -27,6 +27,12 @@ function BbsItem(props) {
 
     
     const navigate = useNavigate();
+
+    // json-server
+    // const moveHandler = (id) =>{
+    //     navigate(`bbs-view/${id}`);
+    // }
+    
     const moveHandler = (id) =>{
         navigate(`bbs-view/${id}`);
     }
