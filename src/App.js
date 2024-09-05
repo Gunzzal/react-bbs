@@ -1,9 +1,10 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Route, Routes, useNavigate } from 'react-router-dom';
 import './App.css';
-import HomePage from './bbs/component/pages/HomePage';
-import BbsWirtePage from './bbs/component/pages/BbsWirtePage';
-import { useNavigate } from 'react-router-dom';
 import BbsViewPage from './bbs/component/pages/BbsViewPage';
+import BbsWirtePage from './bbs/component/pages/BbsWirtePage';
+import ForecastWritePage from './bbs/component/pages/ForecastWritePage';
+import ForecastViewPage from './bbs/component/pages/ForecastViewPage';
+import HomePage from './bbs/component/pages/HomePage';
 
 function Header() {
   const navigate = useNavigate();
@@ -24,6 +25,8 @@ function App() {
         {/* <Route path="/bbs-fixe/:id" element={<BbsWirtePage/>}></Route> */}
         <Route path="/bbs-fixe" element={<BbsWirtePage/>}></Route>
         <Route path="/bbs-view/:id" element={<BbsViewPage/>}></Route>
+        <Route path="/forecast-write" element={<ForecastWritePage/>}></Route>
+        <Route path="/forecast-view" element={<ForecastViewPage/>}></Route>
       </Routes>
     </BrowserRouter>
   );

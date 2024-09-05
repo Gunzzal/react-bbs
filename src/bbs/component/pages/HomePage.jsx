@@ -62,6 +62,12 @@ function HomePage() {
         <Wrapper>
             <Container>
                 <div align='right'>
+                <Button
+                        title='Forecast'
+                        onClick={() => {
+                            navigate('forecast-write');
+                        }}
+                    ></Button>&nbsp;&nbsp;
                     <Button
                         title='글 작성하기'
                         onClick={() => {
